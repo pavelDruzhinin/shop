@@ -11,7 +11,7 @@ namespace WebApplication4.Models
         public int CategoryId { get; set; }
         public Category Category { get; set; }
         public string Name { get; set; }
-        public uint Count { get; set; }
+        public int Count { get; set; }
         public decimal Price { get; set; }
         public string Description { get; set; }
         public List<OrderPosition> OrderPositions { get; set; }
