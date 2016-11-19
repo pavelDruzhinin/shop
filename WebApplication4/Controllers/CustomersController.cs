@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication4.DataAccess;
 using WebApplication4.Models;
-
-//Дз.
-//Покурить AJAX
-//Удаление позиций в заказе
-//Изменение кол-ва
-//Сообщение пользователю если нет указанного кол-ва на складе
-//Доп. задание: все с помощью ajax
 
 namespace WebApplication4.Controllers
 {
@@ -35,7 +24,7 @@ namespace WebApplication4.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Customer customer = db.Customers.Find(id);
+            var customer = db.Customers.Find(id);
             if (customer == null)
             {
                 return HttpNotFound();
@@ -54,7 +43,7 @@ namespace WebApplication4.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,FirstName,LastName,Birthday")] Customer customer)
+        public ActionResult Create(Customer customer)
         {
             if (ModelState.IsValid)
             {
@@ -73,7 +62,7 @@ namespace WebApplication4.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Customer customer = db.Customers.Find(id);
+            var customer = db.Customers.Find(id);
             if (customer == null)
             {
                 return HttpNotFound();
@@ -86,7 +75,7 @@ namespace WebApplication4.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,FirstName,LastName,Birthday")] Customer customer)
+        public ActionResult Edit(Customer customer)
         {
             if (ModelState.IsValid)
             {
@@ -104,7 +93,7 @@ namespace WebApplication4.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Customer customer = db.Customers.Find(id);
+            var customer = db.Customers.Find(id);
             if (customer == null)
             {
                 return HttpNotFound();
@@ -117,7 +106,7 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Customer customer = db.Customers.Find(id);
+            var customer = db.Customers.Find(id);
             db.Customers.Remove(customer);
             db.SaveChanges();
             return RedirectToAction("Index");

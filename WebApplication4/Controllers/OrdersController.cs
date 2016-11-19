@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication4.DataAccess;
 using WebApplication4.Models;
@@ -29,7 +25,7 @@ namespace WebApplication4.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Order order = db.Orders.Find(id);
+            var order = db.Orders.Find(id);
             if (order == null)
             {
                 return HttpNotFound();
@@ -63,16 +59,15 @@ namespace WebApplication4.Controllers
         }
 
         // GET: Orders/Edit/5
-        [Route("cartIndex")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Order order = db.Orders.Include(x => x.OrderPositions)
+
+            var order = db.Orders.Include(x => x.OrderPositions)
                 .Include(x => x.OrderPositions.Select(o => o.Product))
                 .FirstOrDefault(x => x.Id == id);
+
             if (order == null)
             {
                 return HttpNotFound();
@@ -105,7 +100,7 @@ namespace WebApplication4.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Order order = db.Orders.Find(id);
+            var order = db.Orders.Find(id);
             if (order == null)
             {
                 return HttpNotFound();
@@ -118,10 +113,88 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Order order = db.Orders.Find(id);
+            var order = db.Orders.Find(id);
             db.Orders.Remove(order);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public ActionResult Cart()
+        {
+            if (!User.Identity.IsAuthenticated)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            var customer = db.Customers.FirstOrDefault(x => x.Login == User.Identity.Name);
+
+            if (customer == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            var order =
+                db.Orders
+                .Include(x => x.OrderPositions)
+                .Include(x => x.OrderPositions.Select(o => o.Product))
+                .FirstOrDefault(x => x.CustomerId == customer.Id && x.IsCurrent);
+
+            if (order == null)
+            {
+                order = new Order
+                {
+                    Customer = customer,
+                    IsCurrent = true
+                };
+                db.Orders.Add(order);
+                db.SaveChanges();
+            }
+
+            return View(order);
+        }
+
+        public ActionResult RemoveFromCart(int id)
+        {
+            var orderPosition = db.OrderPositions.Include(x => x.Product).FirstOrDefault(x => x.Id == id);
+
+            if (orderPosition == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            if (orderPosition.Count > 0)
+            {
+                orderPosition.Count--;
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("Cart");
+        }
+
+        public ActionResult AddToCart(int id)
+        {
+            var orderPosition = db.OrderPositions.Include(x => x.Product).FirstOrDefault(x => x.Id == id);
+
+            if (orderPosition == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            if (orderPosition.IsCanAddCount())
+            {
+                orderPosition.Count++;
+                db.SaveChanges();
+            }
+            else
+            {
+                ModelState.AddModelError("", $"К сожалению, продукта {orderPosition.Product.Name} больше нет :(");
+            }
+
+            return RedirectToAction("Cart");
+        }
+
+        public ActionResult RemovePositionFromCart(int id)
+        {
+            var orderPosition = db.OrderPositions.FirstOrDefault(x => x.Id == id);
+            if (orderPosition == null)
+                return RedirectToAction("Cart");
+
+            db.OrderPositions.Remove(orderPosition);
+            db.SaveChanges();
+
+            return RedirectToAction("Cart");
         }
 
         protected override void Dispose(bool disposing)

@@ -20,12 +20,30 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                     <li>@Html.ActionLink("Категории", "Index", "Categories")</li>
                     <li>@Html.ActionLink("Товары", "Index", "Products")</li>
                     <li>@Html.ActionLink("Покупатели", "Index", "Customers")</li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li>@Html.ActionLink("Корзина", "Cart", "Orders")</li>
+                    }
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                        {
+                            @Html.AntiForgeryToken()
+                        }
+                        <li>
+                            <a href="javascript:document.getElementById('logoutForm').submit()">Выйти</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Вход", "Login", "Account")</li>
+                    }
+
                 </ul>
             </div>
         </div>

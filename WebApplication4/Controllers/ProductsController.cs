@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication4.DataAccess;
 using WebApplication4.Models;
@@ -26,23 +23,22 @@ namespace WebApplication4.Controllers
             }
             return View(products.ToList());
         }
-    
-        public ActionResult addToCart(int id)
-        {
 
+        public ActionResult AddToCart(int id)
+        {
             var product = db.Products.FirstOrDefault(x => x.Id == id);
             var currentOrder = db.Orders.Include(x => x.OrderPositions).FirstOrDefault(x => x.IsCurrent);
             if (currentOrder == null)
             {
-                currentOrder = new Order()
+                currentOrder = new Order
                 {
                     Customer = db.Customers.FirstOrDefault(),
                     IsCurrent = true,
-                    OrderPositions = new List<OrderPosition>()
+                    OrderPositions = new List<OrderPosition>
                     {
-                        new OrderPosition() {Count = 1, Product = product}
+                        new OrderPosition { Count = 1, Product = product }
                     }
-                };  
+                };
 
                 db.Orders.Add(currentOrder);
                 db.SaveChanges();
@@ -51,18 +47,17 @@ namespace WebApplication4.Controllers
             {
                 var orderPosition = currentOrder.OrderPositions.FirstOrDefault(x => x.Product == product);
                 if (orderPosition != null)
+                {
                     orderPosition.Count++;
+                }
                 else
                 {
-                    currentOrder.OrderPositions.Add(
-                        new OrderPosition() { Count = 1, Product = product });
+                    currentOrder.OrderPositions.Add(new OrderPosition { Count = 1, Product = product });
                 }
                 db.SaveChanges();
             }
 
-
-            return RedirectToAction("Edit", "Orders", new { id = currentOrder.Id});
-            //return RedirectToRoute("cartIndex", new {id = currentOrder.Id});
+            return RedirectToAction("Edit", "Orders", new { id = currentOrder.Id });
         }
 
         // GET: Products/Details/5
@@ -72,7 +67,7 @@ namespace WebApplication4.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Products.Find(id);
+            var product = db.Products.Find(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -112,7 +107,7 @@ namespace WebApplication4.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Products.Find(id);
+            var product = db.Products.Find(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -145,7 +140,7 @@ namespace WebApplication4.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Products.Find(id);
+            var product = db.Products.Find(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -158,7 +153,7 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Product product = db.Products.Find(id);
+            var product = db.Products.Find(id);
             db.Products.Remove(product);
             db.SaveChanges();
             return RedirectToAction("Index");

@@ -1,0 +1,35 @@
+﻿@model WebApplication4.Models.Order
+
+@{
+    ViewBag.Title = "Корзина покупателя";
+}
+
+<h2>Корзина пользователя</h2>
+@Html.ValidationSummary()
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Кол-во</th>
+            <th>Цена</th>
+            <th>Сумма</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var orderPosition in Model.OrderPositions)
+            {
+            <tr>
+                <td>@orderPosition.Product.Name</td>
+                <td>
+                    @Html.ActionLink("-", "RemoveFromCart", "Orders", new { id = orderPosition.Id }, null)
+                    @orderPosition.Count
+                    @Html.ActionLink("+", "AddToCart", "Orders", new { id = orderPosition.Id }, null)
+                </td>
+                <td>@(orderPosition.Product.Price)</td>
+                <td>@(orderPosition.Product.Price * orderPosition.Count)</td>
+                <td>@Html.ActionLink("Удалить", "RemovePositionFromCart", "Orders", new { id = orderPosition.Id }, null)</td>
+            </tr>
+        }
+    </tbody>
+</table>

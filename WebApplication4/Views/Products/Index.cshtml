@@ -4,14 +4,22 @@
     ViewBag.Title = "Index";
 }
 
+<style>
+    .margin-bottom-10 {
+        margin-bottom: 10px;
+    }
+</style>
+
 <h2>Index</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-<form method="get" action="/Products/Index">
-    <input type="text" id="search" name="search" class="form-control"/>
-    <button type="submit">Найти</button>
+<form class="form-inline margin-bottom-10" method="get" action="/Products/Index">
+    <div class="form-group">
+        <input type="text" id="search" name="search" class="form-control" />
+    </div>
+    <button class="btn btn-default" type="submit">Найти</button>
 </form>
 <table class="table">
     <tr>
@@ -33,30 +41,34 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Category.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Count)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Price)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Description)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id }) |
-            @Html.ActionLink("Add to cart", "addToCart", new { id=item.Id })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Count)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <text> | @Html.ActionLink("Add to cart", "AddToCart", new { id = item.Id })</text>
+                }
+            </td>
+        </tr>
+    }
 
 </table>
