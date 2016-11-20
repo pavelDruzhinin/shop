@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -140,7 +141,8 @@ namespace WebApplication4.Controllers
                 order = new Order
                 {
                     Customer = customer,
-                    IsCurrent = true
+                    IsCurrent = true,
+                    OrderPositions = new List<OrderPosition>()
                 };
                 db.Orders.Add(order);
                 db.SaveChanges();
@@ -162,7 +164,7 @@ namespace WebApplication4.Controllers
                 db.SaveChanges();
             }
 
-            return RedirectToAction("Cart");
+            return Content(orderPosition.Count.ToString());
         }
 
         public ActionResult AddToCart(int id)
@@ -176,13 +178,13 @@ namespace WebApplication4.Controllers
             {
                 orderPosition.Count++;
                 db.SaveChanges();
+                return Content(orderPosition.Count.ToString());
             }
             else
             {
-                ModelState.AddModelError("", $"К сожалению, продукта {orderPosition.Product.Name} больше нет :(");
-            }
+                return Content($"К сожалению, продукта {orderPosition.Product.Name} больше нет :(");
 
-            return RedirectToAction("Cart");
+            }
         }
 
         public ActionResult RemovePositionFromCart(int id)

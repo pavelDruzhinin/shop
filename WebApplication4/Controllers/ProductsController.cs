@@ -27,12 +27,13 @@ namespace WebApplication4.Controllers
         public ActionResult AddToCart(int id)
         {
             var product = db.Products.FirstOrDefault(x => x.Id == id);
-            var currentOrder = db.Orders.Include(x => x.OrderPositions).FirstOrDefault(x => x.IsCurrent);
+            var currentOrder = db.Orders.Include(x => x.OrderPositions)
+                .FirstOrDefault(x => x.IsCurrent && x.Customer.Login == User.Identity.Name);
             if (currentOrder == null)
             {
                 currentOrder = new Order
                 {
-                    Customer = db.Customers.FirstOrDefault(),
+                    Customer = db.Customers.FirstOrDefault(x => x.Login == User.Identity.Name),
                     IsCurrent = true,
                     OrderPositions = new List<OrderPosition>
                     {
@@ -57,7 +58,7 @@ namespace WebApplication4.Controllers
                 db.SaveChanges();
             }
 
-            return RedirectToAction("Edit", "Orders", new { id = currentOrder.Id });
+            return RedirectToAction("Cart", "Orders", new { id = currentOrder.Id });
         }
 
         // GET: Products/Details/5

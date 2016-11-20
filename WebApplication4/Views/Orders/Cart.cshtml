@@ -8,28 +8,30 @@
 @Html.ValidationSummary()
 <table class="table table-bordered">
     <thead>
-        <tr>
-            <th>Название</th>
-            <th>Кол-во</th>
-            <th>Цена</th>
-            <th>Сумма</th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>Название</th>
+        <th>Кол-во</th>
+        <th>Цена</th>
+        <th>Сумма</th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-        @foreach (var orderPosition in Model.OrderPositions)
-            {
-            <tr>
-                <td>@orderPosition.Product.Name</td>
-                <td>
-                    @Html.ActionLink("-", "RemoveFromCart", "Orders", new { id = orderPosition.Id }, null)
-                    @orderPosition.Count
-                    @Html.ActionLink("+", "AddToCart", "Orders", new { id = orderPosition.Id }, null)
-                </td>
-                <td>@(orderPosition.Product.Price)</td>
-                <td>@(orderPosition.Product.Price * orderPosition.Count)</td>
-                <td>@Html.ActionLink("Удалить", "RemovePositionFromCart", "Orders", new { id = orderPosition.Id }, null)</td>
-            </tr>
-        }
+    @foreach (var orderPosition in Model.OrderPositions)
+    {
+        <tr>
+            <td>@orderPosition.Product.Name</td>
+            <td>
+                @Ajax.ActionLink("-", "RemoveFromCart", "Orders", new {id = orderPosition.Id},
+               new AjaxOptions() { UpdateTargetId = "count" + orderPosition.Id})
+                <span id="@("count" + orderPosition.Id)">@orderPosition.Count</span>
+                @Ajax.ActionLink("+", "AddToCart", "Orders", new { id = orderPosition.Id },
+               new AjaxOptions() { UpdateTargetId = "count" + orderPosition.Id })
+            </td>
+            <td>@(orderPosition.Product.Price)</td>
+            <td>@(orderPosition.Product.Price*orderPosition.Count)</td>
+            <td>@Html.ActionLink("Удалить", "RemovePositionFromCart", "Orders", new {id = orderPosition.Id}, null)</td>
+        </tr>
+    }
     </tbody>
 </table>
